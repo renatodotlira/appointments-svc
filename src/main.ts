@@ -9,7 +9,6 @@ import { HttpStatus, router } from './api/routes/index.router';
 import { Auth, configService, Cors, HttpServer } from './config/env.config';
 import { onUnexpectedError } from './config/error.config';
 import { Logger } from './config/logger.config';
-import { swaggerRouter } from './docs/swagger.conf';
 import { ServerUP } from './utils/server-up';
 
 async function bootstrap() {
@@ -36,8 +35,6 @@ async function bootstrap() {
     compression(),
   );
   app.use('/', router);
-
-  if (!configService.get('SERVER').DISABLE_DOCS) app.use(swaggerRouter);
 
   app.use(
     (err: Error, req: Request, res: Response, next: NextFunction) => {

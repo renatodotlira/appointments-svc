@@ -1,7 +1,7 @@
 FROM node:20.7.0-alpine AS builder
 
 RUN apk update && apk upgrade && \
-    apk add --no-cache git tzdata ffmpeg wget curl
+    apk add --no-cache tzdata wget curl
 
 WORKDIR /app
 
@@ -20,7 +20,7 @@ ENV DOCKER_ENV=true
 
 ENV SERVER_TYPE=http
 ENV SERVER_PORT=8083
-ENV SERVER_URL=http://localhost:8083
+#ENV SERVER_URL=http://localhost:8083
 
 ENV CORS_ORIGIN=*
 ENV CORS_METHODS=POST,GET,PUT,DELETE
@@ -38,6 +38,11 @@ ENV AUTHENTICATION_JWT_EXPIRIN_IN=0
 ENV AUTHENTICATION_JWT_SECRET='L=0YWt]b2w[WF>#>:&E`'
 
 ENV AUTHENTICATION_INSTANCE_MODE=server
+
+ENV DATABASE_HOST=192.168.0.111
+ENV DATABASE_USER=postgres
+ENV DATABASE_PASSWORD=FENIX@04
+ENV DATABASE_NAME=cutscheduler
 
 WORKDIR /app
 

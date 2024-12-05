@@ -1,7 +1,10 @@
 import { Sequelize } from 'sequelize';
-import { configService, Database } from '../config/env.config';
+import { configService } from '../config/env.config';
 
 console.log("carregando configs");
+console.log(configService.get("DATABASE").HOST);
+console.log(configService.get("DATABASE").DB_NAME);
+console.log(configService.get("DATABASE").USER);
 console.log(configService.get("DATABASE").PASSWORD);
 
 const sequelize: Sequelize = new Sequelize(
