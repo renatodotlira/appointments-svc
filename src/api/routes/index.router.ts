@@ -5,6 +5,7 @@ import { Auth, configService } from '../../config/env.config';
 import { InstanceRouter } from './instance.router';
 import { AppointmentRouter } from './appointment.router';
 import { EmployeeRouter } from './employee.router';
+import sequelize from '../../libs/database';
 
 enum HttpStatus {
   OK = 200,
@@ -22,14 +23,19 @@ const serverConfig = configService.get('SERVER');
 const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 router
-  .get('/', (req, res) => {
+  .get('/', async (req, res) => {
+    try {
+      await sequelize.authenticate();
+      console.log('Connection has been established successfully.');
+    } catch (error) {
+      console.error('Unable to connect to the database:', error);
+    }
+
     res.status(HttpStatus.OK).json({
       status: HttpStatus.OK,
       message: 'Welcome my API, it is working!',
       version: packageJson.version,
-      swagger: !serverConfig.DISABLE_DOCS ? `${req.protocol}://${req.get('host')}/docs` : undefined,
-      manager: !serverConfig.DISABLE_MANAGER ? `${req.protocol}://${req.get('host')}/manager` : undefined,
-    });
+   });
   })
   .use('/instance', new InstanceRouter(configService).router)
   .use('/appointment', new AppointmentRouter(configService).router)

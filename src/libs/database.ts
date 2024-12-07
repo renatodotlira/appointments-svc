@@ -14,6 +14,8 @@ const sequelize: Sequelize = new Sequelize(
 {
   host: configService.get("DATABASE").HOST,
   dialect: 'postgres',
+  logging: false,
 });
 
+console.log(sequelize);
 export default sequelize;
