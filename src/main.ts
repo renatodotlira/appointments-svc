@@ -19,6 +19,7 @@ async function bootstrap() {
     cors({
       origin(requestOrigin, callback) {
         const { ORIGIN } = configService.get<Cors>('CORS');
+        console.log("cors: " + ORIGIN);
         if (ORIGIN.includes('*')) {
           return callback(null, true);
         }

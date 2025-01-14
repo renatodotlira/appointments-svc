@@ -123,9 +123,10 @@ export class AppointmentController {
     }
   }
 
-  public async rescheduleAppointment(id: number | string, newDateTime: string) {
+  public async rescheduleAppointment(id: number | string, employeeId: number, newDateTime: string) {
     try {
       logger.info(`start method rescheduleAppointment for id: ${id}`);
+      console.log(newDateTime);
 
       const appointment = await Appointment.findOne({
         include: [
@@ -142,11 +143,15 @@ export class AppointmentController {
         throw new NotFoundException('Agendamento não encontrado');
       }
       const newStartTime = new Date(newDateTime);
-      const appointmentDuration = appointment.duration;
+      const newEndTime = new Date(newDateTime);
 
-      const conflictingAppointments = await Appointment.findAll({
+      const appointmentDuration = appointment.duration;
+      newEndTime.setMinutes(newEndTime.getMinutes() + appointmentDuration); 
+
+      /*const conflictingAppointments = await Appointment.findAll({
         where: {
-          employee_id: appointment.employee_id,
+          employee_id: employeeId,
+          id: {[Op.not]: id},
           status: 'SCHEDULED',
           start: {
             [Op.between]: [
@@ -156,14 +161,20 @@ export class AppointmentController {
           }
         }
       });
+      
 
       if (conflictingAppointments.length > 0) {
         throw new BadRequestException(`O horário selecionado está em conflito com outro agendamento.`);
       }
-      const { timeDisplay, timeEndDisplay } = updateAppointmentTime(appointment);
+
+      */
+      const timeString = getTimeString(newStartTime);
+      const { timeDisplay, timeEndDisplay } = updateAppointmentTime(appointment, timeString);
       appointment.time_display = timeDisplay;
       appointment.time_end_display = timeEndDisplay;
       appointment.start = newStartTime;
+      appointment.end = newEndTime;
+      appointment.employee_id = employeeId;
       await appointment.save();
 
       logger.info(`Appointment with id ${id} rescheduled successfully to ${newStartTime}`);
@@ -175,11 +186,45 @@ export class AppointmentController {
     }
   }
 
-  public async getAppointmentsByMonth() {
+
+
+
+  public async bookAppointment(employeeId: number, dateTimeStart: string, dateTimeEnd: string) {
     try {
-      const today = new Date();
-      const startOfCurrentMonth = startOfMonth(today);
-      const endOfCurrentMonth = endOfMonth(today);
+      logger.info(`start method bookAppointment`);
+
+      const startTime = new Date(dateTimeStart);
+      const endTime = new Date(dateTimeEnd);
+
+      const timeDisplay = getTimeString(startTime);
+      const timeEndDisplay = getTimeString(endTime);
+      const appointment = new Appointment();
+      appointment.time_display = timeDisplay;
+      appointment.time_end_display = timeEndDisplay;
+      appointment.start = startTime;
+      appointment.end = endTime;
+      appointment.employee_id = employeeId;
+      appointment.status = "SCHEDULED";
+      await appointment.save();
+
+      logger.info(`Appointment BOOKED successfully`);
+      return { message: 'Agendamento reagendado com sucesso' };
+
+    } catch (error) {
+      logger.error(error.message);
+      throw new BadRequestException(error.message);
+    }
+  }
+
+
+
+
+  public async getAppointmentsByMonth(month: number) {
+    try {
+      const dateMonth = new Date();
+      dateMonth.setMonth(month);
+      const startOfCurrentMonth = startOfMonth(dateMonth);
+      const endOfCurrentMonth = endOfMonth(dateMonth);
 
       const appointments = await Appointment.findAll({
         where: {
@@ -255,10 +300,9 @@ const convertMinutesToHours = (minutes: number): { hours: number; remainingMinut
   return { hours, remainingMinutes };
 };
 
-const updateAppointmentTime = (appointment: Appointment): { timeDisplay: string; timeEndDisplay: string } => {
-  console.log(appointment);
+const updateAppointmentTime = (appointment: Appointment, dateString: string): { timeDisplay: string; timeEndDisplay: string } => {
   const newDate = new Date(appointment.start.getTime());
-  const [splitHours, splitMinutes] = appointment.time_display.split(":").map(Number);
+  const [splitHours, splitMinutes] = dateString.split(":").map(Number);
   newDate.setHours(splitHours, splitMinutes, 0, 0);
   const timeDisplay = `${padToTwoDigits(splitHours)}:${padToTwoDigits(splitMinutes)}`;
   const endDateHour = new Date(newDate.getTime());
@@ -269,3 +313,10 @@ const updateAppointmentTime = (appointment: Appointment): { timeDisplay: string;
   return { timeDisplay, timeEndDisplay };
 };
 
+
+const getTimeString = (date: Date):string => {
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  return `${hours}:${minutes}`;
+}
