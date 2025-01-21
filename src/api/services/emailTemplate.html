@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Template</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: rgb(105, 117, 134);
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      background: #212529;
+      color: #ffffff;
+      padding: 20px;
+      text-align: center;
+    }
+    .body {
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .footer {
+      background: #f4f4f4;
+      color: #555;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+    }
+    .button {
+      display: inline-block;
+      background: #007bff;
+      color: #ffffff;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+    .button:hover {
+      background: #212529;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Bem-vindo ao IneChat!</h1>
+    </div>
+
+    <!-- Body -->
+    <div class="body">
+      <p>Olá,</p>
+      <p>Estamos muito felizes que você se juntou a nós. Clique no botão abaixo para confirmar sua conta:</p>
+      <a href="{{link}}" class="button" style="color: #ffffff;">Confirmar Conta</a>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>&copy; 2025 IneChat. Todos os direitos reservados.</p>
+    </div>
+  </div>
+</body>
+</html>

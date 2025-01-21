@@ -5,6 +5,7 @@ import { Auth, configService } from '../../config/env.config';
 import { InstanceRouter } from './instance.router';
 import { AppointmentRouter } from './appointment.router';
 import { EmployeeRouter } from './employee.router';
+import { UserRouter } from './user.router';
 import sequelize from '../../libs/database';
 
 enum HttpStatus {
@@ -40,5 +41,6 @@ router
   .use('/instance', new InstanceRouter(configService).router)
   .use('/appointment', new AppointmentRouter(configService).router)
   .use('/employee', new EmployeeRouter(configService).router)
+  .use('/user', new UserRouter(configService).router)
 
 export { HttpStatus, router };

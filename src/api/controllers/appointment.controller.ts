@@ -216,9 +216,6 @@ export class AppointmentController {
     }
   }
 
-
-
-
   public async getAppointmentsByMonth(month: number) {
     try {
       const dateMonth = new Date();

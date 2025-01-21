@@ -7,6 +7,7 @@ export class EmployeeController {
   constructor() { }
 
   async getEmployeesByBusinessId(businessId: string) {
+    logger.info("Start method getEmployeesByBusinessId");
     try {
       const employees = await Employee.findAll({ where: { business_id: businessId } });
       return employees;
