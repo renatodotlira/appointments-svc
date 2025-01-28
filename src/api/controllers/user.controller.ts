@@ -6,6 +6,7 @@ import { UserLoginDto } from '../dto/userLogin.dto';
 import UserAccount from '../models/userAccount';
 import { configService } from '../../config/env.config';
 import { EmailService } from '../services/email.service';
+import Business from '../models/business';
 
 export class UserController {
   constructor(private readonly emailService: EmailService) {}
@@ -15,19 +16,26 @@ export class UserController {
   public async login(userLogin: UserLoginDto) {
     try {
       this.logger.info('requested login');
-      const userAccount = await UserAccount.findOne({ where: { email: userLogin.userName}});
+      const userAccount = await UserAccount.findOne({ 
+        where: { email: userLogin.userName},
+        include: [
+          {
+            model: Business,
+            as: 'business',
+          }]
+      });
       if (!userAccount) {
         throw new BadRequestException("Usuário não encontrado.");
       }
       const isValid = await bcrypt.compare(userLogin.password, userAccount.password);
-      console.log(isValid);
       if (!isValid) {
         throw new BadRequestException("Senha inválida.");
       }
 
-      const token = jwt.sign({ id: userAccount.id }, configService.get("AUTHENTICATION").JWT.SECRET, {
+      const token = jwt.sign({ userAccountId: userAccount.id, business_id: userAccount.business.id }, configService.get("AUTHENTICATION").JWT.SECRET, {
         expiresIn: configService.get("AUTHENTICATION").JWT.EXPIRIN_IN,
       });
+      console.log(token);
       return token;
 
     } catch (error) {

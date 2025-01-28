@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../../libs/database';
+import Business from './business';
 
 // Definição do modelo de User
 class UserAccount extends Model {
@@ -7,6 +8,7 @@ class UserAccount extends Model {
   public phoneNumber!: string;
   public email!: string
   public password!: string;
+  public business!: Business;
 }
 
 UserAccount.init({
@@ -29,5 +31,12 @@ UserAccount.init({
   tableName: 'user_account',
   timestamps: false
 });
+
+// Relações entre modelos
+Business.hasMany(UserAccount, {
+  foreignKey: 'business_id',
+  as: 'userAccounts',
+});
+UserAccount.belongsTo(Business, { foreignKey: 'business_id', as: 'business' });
 
 export default UserAccount;
